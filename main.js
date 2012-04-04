@@ -45,9 +45,8 @@ window.onload = function()
 		};
 
         scene.addEventListener('touchmove', function(e){
-          cell = posToCell(e.x, e.y);
-          console.log(cell.x);
-    	  console.log(cell.y);
+          block = posToBlock(e.x, e.y);
+          console.dir(block);
         });
 	}
 
@@ -86,25 +85,21 @@ var initScreen = function(scene) {
 }
 
 // ----------------------------------------------------------
-// x,y座標からブロック返却
-// ----------------------------------------------------------
-var posToBlock = function(x, y) {
-  var cell = {};
-  x = Math.ceil(x);
-  y = Math.ceil(y);
-  cell.x = x >= BLOCK_SIZE ? x / BLOCK_SIZE : 0;
-  cell.y = y >= BLOCK_SIZE ? y / BLOCK_SIZE : 0;
-  return cell;
-}
-
-// ----------------------------------------------------------
 // x,y座標からセル位置返却
 // ----------------------------------------------------------
 var posToCell = function(x, y) {
   var cell = {};
-  cell.x = x >= BLOCK_SIZE ? x / BLOCK_SIZE : 0;
-  cell.y = y >= BLOCK_SIZE ? y / BLOCK_SIZE : 0;
+  cell.x = Math.floor(x / BLOCK_SIZE);
+  cell.y = Math.floor(y / BLOCK_SIZE);
   return cell;
+}
+
+// ----------------------------------------------------------
+// x,y座標からブロック返却
+// ----------------------------------------------------------
+var posToBlock = function(x, y) {
+  var cell = posToCell(x, y);
+  return screen[cell.x][cell.y];
 }
 
 // ----------------------------------------------------------
