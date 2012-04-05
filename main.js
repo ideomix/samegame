@@ -36,34 +36,57 @@ window.onload = function()
 		var scene = game.rootScene;
 		scene.backgroundColor = "black";
 
-        // ゲーム開始処理
+    // ゲーム開始処理
 		scene.onenter = function() {
 			game.frame = 0;
 			initScreen(scene);
 		};
 
-        // 更新処理
+    // 更新処理
 		scene.onenterframe = function() {
 //          console.log(game.frame);
 		};
 
-        // タッチ開始
-        scene.addEventListener('touchstart', function(e){
-          block = posToBlock(e.x, e.y);
-          console.dir(block);
-        });
+    // タッチ開始
+    scene.addEventListener('touchstart', function(e){
+      connector_path = new Array();
+      connector_path.push(posToBlock(e.x, e.y));
+      console.dir(connector_path);
+    });
 
-        // タッチ移動中
-        scene.addEventListener('touchmove', function(e){
-          block = posToBlock(e.x, e.y);
-          console.dir(block);
-        });
+    // タッチ移動中
+    scene.addEventListener('touchmove', function(e){
+      block = posToBlock(e.x, e.y);
+      // 直前のブロックと同一？
+console.dir(connector_path.slice(-1));
+console.dir(block);
 
-        // タッチ終了
-        scene.addEventListener('touchend', function(e){
-          block = posToBlock(e.x, e.y);
-          console.dir(block);
-        });
+      if (connector_path.slice(-1) == block) {
+console.log("aaaaaaa");
+        return;
+      } 
+
+      // すでにコネクターがつながってるブロック？
+      if ((idx = connector_path.indexOf(block)) != -1)
+      {
+console.log("xxxx");
+        // すでに登録されてるブロックまでコネクターを戻す
+        connector_path = connector_path.slice(0, idx);
+      }
+      // 直近ブロックと隣接してる？
+      else if (is_adjacent(connector_path.slice(-1), block))
+      {
+        // コネクタ延長
+        connector_path.push(block);
+      }
+      console.dir(connector_path);
+    });
+
+    // タッチ終了
+    scene.addEventListener('touchend', function(e){
+      // TODO: connector_pathをもとにコネクター描画
+      console.dir(connector_path);
+    });
 	}
 
 
@@ -129,13 +152,6 @@ var blockToCell = function(block) {
 // 指定ブロック1に2は隣接しているか判定
 // ----------------------------------------------------------
 var is_adjacent = function(block1, block2) {
-  console.dir(block1
-    )
-  console.dir(block2)
-  console.log(block1.cell.x)
-  console.log(block1.cell.y)
-  console.log(block2.cell.x)
-  console.log(block2.cell.y)
   // 種別違う
   if     (block1.type != block2.type) 
   	return false;
