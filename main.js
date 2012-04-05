@@ -11,11 +11,14 @@ var SCREEN_CELL_Y = 10;
 var SCREEN_SIZE_HEIGHT = BLOCK_SIZE * SCREEN_CELL_Y;
 var SCREEN_SIZE_WIDTH = BLOCK_SIZE * SCREEN_CELL_X;
 
+var CONNECTOR_WIDTH = "3px"
+
 // ----------------------------------------------------------
 // グローバル変数
 // ----------------------------------------------------------
 var game = null;
 var screen = new Array();
+var connector_path = new Array();
 
 // ----------------------------------------------------------
 // enchant関係
@@ -44,7 +47,20 @@ window.onload = function()
 //          console.log(game.frame);
 		};
 
+        // タッチ開始
+        scene.addEventListener('touchstart', function(e){
+          block = posToBlock(e.x, e.y);
+          console.dir(block);
+        });
+
+        // タッチ移動中
         scene.addEventListener('touchmove', function(e){
+          block = posToBlock(e.x, e.y);
+          console.dir(block);
+        });
+
+        // タッチ終了
+        scene.addEventListener('touchend', function(e){
           block = posToBlock(e.x, e.y);
           console.dir(block);
         });
@@ -110,6 +126,52 @@ var blockToCell = function(block) {
 }
 
 // ----------------------------------------------------------
+// 指定ブロック1に2は隣接しているか判定
+// ----------------------------------------------------------
+var is_adjacent = function(block1, block2) {
+  console.dir(block1
+    )
+  console.dir(block2)
+  console.log(block1.cell.x)
+  console.log(block1.cell.y)
+  console.log(block2.cell.x)
+  console.log(block2.cell.y)
+  // 種別違う
+  if     (block1.type != block2.type) 
+  	return false;
+  // 上隣接
+  else if (block1.cell.x == block2.cell.x    && block1.cell.y == block2.cell.y -1)
+    return true;
+  // 完全同一セル
+  else if (block1.cell.x == block2.cell.x    && block1.cell.y == block2.cell.y   )
+    return true;
+  // 下隣接
+  else if (block1.cell.x == block2.cell.x    && block1.cell.y == block2.cell.y -1)
+    return true;
+  // 左上隣接
+  else if (block1.cell.x == block2.cell.x -1 && block1.cell.y == block2.cell.y -1)
+    return true;
+  // 左隣接
+  else if (block1.cell.x == block2.cell.x -1 && block1.cell.y == block2.cell.y   )
+    return true;
+  // 左下隣接
+  else if (block1.cell.x == block2.cell.x -1 && block1.cell.y == block2.cell.y +1)
+    return true;
+  // 右上隣接
+  else if (block1.cell.x == block2.cell.x +1 && block1.cell.y == block2.cell.y -1)
+    return true;
+  // 右隣接
+  else if (block1.cell.x == block2.cell.x +1 && block1.cell.y == block2.cell.y   )
+    return true;
+   // 右下隣接
+  else if (block1.cell.x == block2.cell.x +1 && block1.cell.y == block2.cell.y +1)
+    return true;
+   // それ以外
+  else 
+  	return false; 
+}
+
+// ----------------------------------------------------------
 // ブロック破壊
 // ----------------------------------------------------------
 var shotBlock = function(block) {
@@ -130,6 +192,7 @@ var shotBlock = function(block) {
 var Block = Class.create(Group, {
 	initialize: function(blockIndex) {
 		Group.call(this);
+        this.type  = 1;
         this.index = blockIndex;
 		var sprite  = new Sprite(BLOCK_SIZE, BLOCK_SIZE);
 		var surface = new Surface(BLOCK_SIZE, BLOCK_SIZE);
@@ -155,8 +218,8 @@ var Block = Class.create(Group, {
 		this.surface = surface;
 	},
 
-	ontouchstart: function() {
-		shotBlock(this)
-	}
+//	ontouchstart: function() {
+//		shotBlock(this)
+//	}
 
 });
