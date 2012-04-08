@@ -51,6 +51,7 @@ window.onload = function()
     scene.addEventListener('touchstart', function(e){
       connector_path = new Array();
       connector_path.push(posToBlock(e.x, e.y));
+      initConnectorLayer(scene);
       console.dir(connector_path);
     });
 
@@ -121,6 +122,17 @@ var initScreen = function(scene) {
 	  scene.addChild(block)
  	}
   }
+}
+
+// ----------------------------------------------------------
+// コネクタ描画レイヤー
+// ----------------------------------------------------------
+var initConnectorLayer = function(scene) {
+console.log("initConnectorLayer in");
+  var connectorLayer = new ConnectorLayer(scene.width, scene.height);
+  connectorLayer.x = 0;
+  connectorLayer.y = 0;
+  scene.addChild(connectorLayer)
 }
 
 // ----------------------------------------------------------
@@ -238,4 +250,23 @@ var Block = Class.create(Group, {
 //		shotBlock(this)
 //	}
 
+});
+
+// ----------------------------------------------------------
+// コネクタ描画レイヤークラス
+// ----------------------------------------------------------
+var ConnectorLayer = Class.create(Group, {
+  initialize: function(width, height) {
+    Group.call(this);
+    var sprite  = new Sprite(width, height);
+    var surface = new Surface(width, height);
+    var context = surface.context;
+    context.fillStyle = "black";
+    context.opacity = 1.0;
+    sprite._element.style.zIndex = 4;
+    sprite.image = surface;
+    this.addChild(sprite);
+    this.sprite = sprite;
+    this.surface = surface;
+  },
 });
