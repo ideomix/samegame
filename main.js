@@ -51,11 +51,6 @@ window.onload = function()
     scene.addEventListener('touchstart', function(e){
       connector_path = new Array();
       connector_path.push(posToBlock(e.x, e.y));
-<<<<<<< HEAD
-      initConnectorLayer(scene);
-      console.dir(connector_path);
-=======
->>>>>>> コネクタ描画とか選択中コネクタの持ち方変えたりした
     });
 
     // タッチ移動中
@@ -124,7 +119,7 @@ var initScreen = function(scene) {
   }
 
   // コネクタ用レイヤーを用意しておく
-  var connectorLayer = new Connector();
+  var connectorLayer = new Connector(scene);
 }
 
 // ----------------------------------------------------------
@@ -298,24 +293,8 @@ var Block = Class.create(Group, {
 // ----------------------------------------------------------
 // コネクタ描画レイヤークラス
 // ----------------------------------------------------------
-<<<<<<< HEAD
-var ConnectorLayer = Class.create(Group, {
-  initialize: function(width, height) {
-    Group.call(this);
-    var sprite  = new Sprite(width, height);
-    var surface = new Surface(width, height);
-    var context = surface.context;
-    context.fillStyle = "black";
-    context.opacity = 1.0;
-    sprite._element.style.zIndex = 4;
-    sprite.image = surface;
-    this.addChild(sprite);
-    this.sprite = sprite;
-    this.surface = surface;
-  },
-=======
 var Connector = Class.create(Sprite, {
-  initialize: function() {
+  initialize: function(scene) {
     var sprite  = new Sprite(SCREEN_SIZE_HEIGHT, SCREEN_SIZE_WIDTH);
     var surface = new Surface(SCREEN_SIZE_HEIGHT, SCREEN_SIZE_WIDTH);
     var context = surface.context;
@@ -324,12 +303,11 @@ var Connector = Class.create(Sprite, {
     context.stroke();
     sprite.opacity = 0.5;
     sprite.image = surface;
-    this.addChild(sprite);
+    scene_.addChild(sprite);
   },
 
 //  ontouchstart: function() {
 //    shotBlock(this)
 //  }
 
->>>>>>> コネクタ描画とか選択中コネクタの持ち方変えたりした
 });
