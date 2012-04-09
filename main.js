@@ -11,7 +11,7 @@ var SCREEN_CELL_Y = 10;
 var SCREEN_SIZE_HEIGHT = BLOCK_SIZE * SCREEN_CELL_Y;
 var SCREEN_SIZE_WIDTH = BLOCK_SIZE * SCREEN_CELL_X;
 
-var CONNECTOR_WIDTH = "3px"
+var CONNECTOR_WIDTH = 10;
 
 // ----------------------------------------------------------
 // グローバル変数
@@ -51,42 +51,42 @@ window.onload = function()
     scene.addEventListener('touchstart', function(e){
       connector_path = new Array();
       connector_path.push(posToBlock(e.x, e.y));
+<<<<<<< HEAD
       initConnectorLayer(scene);
       console.dir(connector_path);
+=======
+>>>>>>> コネクタ描画とか選択中コネクタの持ち方変えたりした
     });
 
     // タッチ移動中
     scene.addEventListener('touchmove', function(e){
       block = posToBlock(e.x, e.y);
-      // 直前のブロックと同一？
-console.dir(connector_path.slice(-1));
-console.dir(block);
 
-      if (connector_path.slice(-1) == block) {
-console.log("aaaaaaa");
+      // 直前のブロックと同一？
+      if (connector_path.slice(-1)[0] == block) {
+        // 抜ける
         return;
       } 
 
+      idx = connector_path.indexOf(block);
       // すでにコネクターがつながってるブロック？
-      if ((idx = connector_path.indexOf(block)) != -1)
+      if (idx != -1)
       {
-console.log("xxxx");
         // すでに登録されてるブロックまでコネクターを戻す
         connector_path = connector_path.slice(0, idx);
       }
       // 直近ブロックと隣接してる？
-      else if (is_adjacent(connector_path.slice(-1), block))
+      else if (is_adjacent(connector_path.slice(-1)[0], block))
       {
         // コネクタ延長
         connector_path.push(block);
       }
-      console.dir(connector_path);
     });
 
     // タッチ終了
     scene.addEventListener('touchend', function(e){
-      // TODO: connector_pathをもとにコネクター描画
-      console.dir(connector_path);
+// TODO: connector_pathをもとにコネクター描画
+console.dir(connector_path);
     });
 	}
 
@@ -119,9 +119,12 @@ var initScreen = function(scene) {
       block.y = (j * BLOCK_SIZE);
       block.cell = blockToCell(block);
       screen[j][i] = block;
-	  scene.addChild(block)
- 	}
+	    scene.addChild(block)
+ 	  }
   }
+
+  // コネクタ用レイヤーを用意しておく
+  var connectorLayer = new Connector();
 }
 
 // ----------------------------------------------------------
@@ -151,6 +154,16 @@ var posToCell = function(x, y) {
 var posToBlock = function(x, y) {
   var cell = posToCell(x, y);
   return screen[cell.x][cell.y];
+}
+    
+// ----------------------------------------------------------
+// セルから中心点x,y座標返却
+// ----------------------------------------------------------
+var cellToCenterPointPos = function(x, y, line_width) {
+  var pos = {};  
+  pos.x = (x * BLOCK_SIZE) + (Math.floor((BLOCK_SIZE - CONNECTOR_WIDTH) / 2));
+  pos.y = (y * BLOCK_SIZE) + (Math.floor((BLOCK_SIZE - CONNECTOR_WIDTH) / 2));
+  return pos;
 }
 
 // ----------------------------------------------------------
@@ -215,13 +228,43 @@ var shotBlock = function(block) {
 }
 
 // ----------------------------------------------------------
+// コネクタ描画
+// ---------------------------------------f-------------------
+var drawPath = function(scene, path_blocks) {
+    // スプライト生成
+    var sprite  = new Sprite(SPRITE_WIDTH, SPRITE_HEIGHT);  // スプライト生成
+    var surface = new Surface(SPRITE_WIDTH, SPRITE_HEIGHT); // サーフェス生成
+    
+    // canvas 描画
+    surface.context.strokeStyle = "red";
+    surface.context.lineWidth = LINE_WIDTH;
+    surface.context.lineJoin = 'round';
+    surface.context.lineCap = 'round';
+    surface.context.beginPath();
+    
+    for (var i =0; i < path_blocks.length; i++) {
+      pos = cellToCenterPointPos(path_blocks[i][0], pathes[i][1], LINE_WIDTH);
+      if (i == 0)
+        surface.context.moveTo(pos.x,pos.y);
+      else
+        surface.context.lineTo(pos.x,pos.y);
+    }
+
+    surface.context.stroke();
+    sprite.image = surface; // サーフェスを画像としてセット
+    scene.addChild(sprite); // シーンに追加
+}
+
+
+// ----------------------------------------------------------
 // ブロッククラス
 // ----------------------------------------------------------
 var Block = Class.create(Group, {
 	initialize: function(blockIndex) {
 		Group.call(this);
-        this.type  = 1;
-        this.index = blockIndex;
+    this.type  = 1;
+    this.index = blockIndex;
+
 		var sprite  = new Sprite(BLOCK_SIZE, BLOCK_SIZE);
 		var surface = new Surface(BLOCK_SIZE, BLOCK_SIZE);
 		var context = surface.context;
@@ -255,6 +298,7 @@ var Block = Class.create(Group, {
 // ----------------------------------------------------------
 // コネクタ描画レイヤークラス
 // ----------------------------------------------------------
+<<<<<<< HEAD
 var ConnectorLayer = Class.create(Group, {
   initialize: function(width, height) {
     Group.call(this);
@@ -269,4 +313,23 @@ var ConnectorLayer = Class.create(Group, {
     this.sprite = sprite;
     this.surface = surface;
   },
+=======
+var Connector = Class.create(Sprite, {
+  initialize: function() {
+    var sprite  = new Sprite(SCREEN_SIZE_HEIGHT, SCREEN_SIZE_WIDTH);
+    var surface = new Surface(SCREEN_SIZE_HEIGHT, SCREEN_SIZE_WIDTH);
+    var context = surface.context;
+    context.fillStyle = "black";
+    context.fillRect(0, 0, SCREEN_SIZE_HEIGHT, SCREEN_SIZE_WIDTH);
+    context.stroke();
+    sprite.opacity = 0.5;
+    sprite.image = surface;
+    this.addChild(sprite);
+  },
+
+//  ontouchstart: function() {
+//    shotBlock(this)
+//  }
+
+>>>>>>> コネクタ描画とか選択中コネクタの持ち方変えたりした
 });
