@@ -11,7 +11,11 @@ var SCREEN_CELL_Y = 10;
 var SCREEN_SIZE_HEIGHT = BLOCK_SIZE * SCREEN_CELL_Y;
 var SCREEN_SIZE_WIDTH = BLOCK_SIZE * SCREEN_CELL_X;
 
-var CONNECTOR_WIDTH = 10;
+// ----------------------------------------------------------
+// デザイン定数
+// ----------------------------------------------------------
+var CONNECTOR_LAYER_BGCOLOR = 'black';
+var CONNECTOR_LAYER_OPACITY = 0.2;
 
 // ----------------------------------------------------------
 // グローバル変数
@@ -19,6 +23,7 @@ var CONNECTOR_WIDTH = 10;
 var game = null;
 var screen = new Array();
 var connector_path = new Array();
+var connectorLayer = null;
 
 // ----------------------------------------------------------
 // enchant関係
@@ -49,6 +54,7 @@ window.onload = function()
 
     // タッチ開始
     scene.addEventListener('touchstart', function(e){
+      showConnectorLayer();
       connector_path = new Array();
       connector_path.push(posToBlock(e.x, e.y));
     });
@@ -80,6 +86,7 @@ window.onload = function()
 
     // タッチ終了
     scene.addEventListener('touchend', function(e){
+      hideConnectorLayer();
 // TODO: connector_pathをもとにコネクター描画
 console.dir(connector_path);
     });
@@ -119,18 +126,18 @@ var initScreen = function(scene) {
   }
 
   // コネクタ用レイヤーを用意しておく
-  var connectorLayer = new Connector(scene);
+  connectorLayer = new Connector(scene);
 }
 
 // ----------------------------------------------------------
-// コネクタ描画レイヤー
+// x,y座標からセル位置返却
 // ----------------------------------------------------------
-var initConnectorLayer = function(scene) {
-console.log("initConnectorLayer in");
-  var connectorLayer = new ConnectorLayer(scene.width, scene.height);
-  connectorLayer.x = 0;
-  connectorLayer.y = 0;
-  scene.addChild(connectorLayer)
+var showConnectorLayer = function(){
+  connectorLayer.sprite._element.style.zIndex = 1;
+}
+
+var hideConnectorLayer = function(){
+  connectorLayer.sprite._element.style.zIndex = -1;
 }
 
 // ----------------------------------------------------------
@@ -282,12 +289,7 @@ var Block = Class.create(Group, {
 
 		this.sprite = sprite;
 		this.surface = surface;
-	},
-
-//	ontouchstart: function() {
-//		shotBlock(this)
-//	}
-
+	}
 });
 
 // ----------------------------------------------------------
@@ -298,16 +300,13 @@ var Connector = Class.create(Sprite, {
     var sprite  = new Sprite(SCREEN_SIZE_HEIGHT, SCREEN_SIZE_WIDTH);
     var surface = new Surface(SCREEN_SIZE_HEIGHT, SCREEN_SIZE_WIDTH);
     var context = surface.context;
-    context.fillStyle = "black";
+    context.fillStyle = CONNECTOR_LAYER_BGCOLOR;
     context.fillRect(0, 0, SCREEN_SIZE_HEIGHT, SCREEN_SIZE_WIDTH);
     context.stroke();
-    sprite.opacity = 0.5;
+    sprite.opacity = CONNECTOR_LAYER_OPACITY;
     sprite.image = surface;
-    scene_.addChild(sprite);
-  },
-
-//  ontouchstart: function() {
-//    shotBlock(this)
-//  }
-
+    sprite._element.style.zIndex = -1;
+    this.sprite = sprite;
+    scene.addChild(sprite);
+  }
 });
