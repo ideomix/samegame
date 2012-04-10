@@ -61,6 +61,9 @@ window.onload = function()
 
     // タッチ移動中
     scene.addEventListener('touchmove', function(e){
+      // 盤面以上の数値がきた場合は正規化
+      e.x = e.x > SCREEN_SIZE_WIDTH ? SCREEN_SIZE_WIDTH : e.x;
+      e.y = e.y > SCREEN_SIZE_HEIGHT ? SCREEN_SIZE_HEIGHT : e.y;
       block = posToBlock(e.x, e.y);
 
       // 直前のブロックと同一？
