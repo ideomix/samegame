@@ -54,7 +54,10 @@ window.onload = function()
 
     // タッチ開始
     scene.addEventListener('touchstart', function(e){
-      showConnectorLayer();
+       // コネクタ用レイヤーを用意しておく
+      connectorLayer = new Connector(scene);
+      // showConnectorLayer();
+
       connector_path = new Array();
       connector_path.push(posToBlock(e.x, e.y));
     });
@@ -85,11 +88,15 @@ window.onload = function()
         // コネクタ延長
         connector_path.push(block);
       }
+
+      drawPath(connectorLayer, connector_path);
     });
 
     // タッチ終了
     scene.addEventListener('touchend', function(e){
-      hideConnectorLayer();
+      // hideConnectorLayer();
+      connectorLayer.sprite.remove();
+
 // TODO: connector_pathをもとにコネクター描画
 console.dir(connector_path);
     });
@@ -128,19 +135,6 @@ var initScreen = function(scene) {
  	  }
   }
 
-  // コネクタ用レイヤーを用意しておく
-  connectorLayer = new Connector(scene);
-}
-
-// ----------------------------------------------------------
-// x,y座標からセル位置返却
-// ----------------------------------------------------------
-var showConnectorLayer = function(){
-  connectorLayer.sprite._element.style.zIndex = 1;
-}
-
-var hideConnectorLayer = function(){
-  connectorLayer.sprite._element.style.zIndex = -1;
 }
 
 // ----------------------------------------------------------
@@ -235,11 +229,8 @@ var shotBlock = function(block) {
 // ----------------------------------------------------------
 // コネクタ描画
 // ---------------------------------------f-------------------
-var drawPath = function(scene, path_blocks) {
-    // スプライト生成
-    var sprite  = new Sprite(SPRITE_WIDTH, SPRITE_HEIGHT);  // スプライト生成
-    var surface = new Surface(SPRITE_WIDTH, SPRITE_HEIGHT); // サーフェス生成
-    
+var drawPath = function(layer, path_blocks) {
+    surface = layer.surface;
     // canvas 描画
     surface.context.strokeStyle = "red";
     surface.context.lineWidth = LINE_WIDTH;
@@ -248,7 +239,7 @@ var drawPath = function(scene, path_blocks) {
     surface.context.beginPath();
     
     for (var i =0; i < path_blocks.length; i++) {
-      pos = cellToCenterPointPos(path_blocks[i][0], pathes[i][1], LINE_WIDTH);
+      pos = cellToCenterPointPos(path_blocks[i].cell.x, pathes[i].cell.y, LINE_WIDTH);
       if (i == 0)
         surface.context.moveTo(pos.x,pos.y);
       else
@@ -256,8 +247,6 @@ var drawPath = function(scene, path_blocks) {
     }
 
     surface.context.stroke();
-    sprite.image = surface; // サーフェスを画像としてセット
-    scene.addChild(sprite); // シーンに追加
 }
 
 
@@ -308,8 +297,9 @@ var Connector = Class.create(Sprite, {
     context.stroke();
     sprite.opacity = CONNECTOR_LAYER_OPACITY;
     sprite.image = surface;
-    sprite._element.style.zIndex = -1;
+    sprite._element.style.zIndex = 1;
     this.sprite = sprite;
+    this.surface = surface;
     scene.addChild(sprite);
   }
 });
