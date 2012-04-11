@@ -16,6 +16,7 @@ var SCREEN_SIZE_WIDTH = BLOCK_SIZE * SCREEN_CELL_X;
 // ----------------------------------------------------------
 var CONNECTOR_LAYER_BGCOLOR = 'black';
 var CONNECTOR_LAYER_OPACITY = 0.2;
+var CONNECTOR_WIDTH = 10;
 
 // ----------------------------------------------------------
 // グローバル変数
@@ -49,14 +50,12 @@ window.onload = function()
 
     // 更新処理
 		scene.onenterframe = function() {
-//          console.log(game.frame);
 		};
 
     // タッチ開始
     scene.addEventListener('touchstart', function(e){
        // コネクタ用レイヤーを用意しておく
       connectorLayer = new Connector(scene);
-      // showConnectorLayer();
 
       connector_path = new Array();
       connector_path.push(posToBlock(e.x, e.y));
@@ -94,11 +93,7 @@ window.onload = function()
 
     // タッチ終了
     scene.addEventListener('touchend', function(e){
-      // hideConnectorLayer();
-      connectorLayer.sprite.remove();
-
-// TODO: connector_pathをもとにコネクター描画
-console.dir(connector_path);
+      connectorLayer.remove();
     });
 	}
 
@@ -233,13 +228,14 @@ var drawPath = function(layer, path_blocks) {
     surface = layer.surface;
     // canvas 描画
     surface.context.strokeStyle = "red";
-    surface.context.lineWidth = LINE_WIDTH;
+    surface.context.lineWidth = CONNECTOR_WIDTH;
     surface.context.lineJoin = 'round';
     surface.context.lineCap = 'round';
     surface.context.beginPath();
     
     for (var i =0; i < path_blocks.length; i++) {
-      pos = cellToCenterPointPos(path_blocks[i].cell.x, pathes[i].cell.y, LINE_WIDTH);
+
+      pos = cellToCenterPointPos(path_blocks[i].cell.x, path_blocks[i].cell.y, CONNECTOR_WIDTH);
       if (i == 0)
         surface.context.moveTo(pos.x,pos.y);
       else
@@ -290,6 +286,7 @@ var Block = Class.create(Group, {
 var Connector = Class.create(Sprite, {
   initialize: function(scene) {
     var sprite  = new Sprite(SCREEN_SIZE_HEIGHT, SCREEN_SIZE_WIDTH);
+    var line_sprite  = new Sprite(SCREEN_SIZE_HEIGHT, SCREEN_SIZE_WIDTH);
     var surface = new Surface(SCREEN_SIZE_HEIGHT, SCREEN_SIZE_WIDTH);
     var context = surface.context;
     context.fillStyle = CONNECTOR_LAYER_BGCOLOR;
@@ -301,5 +298,9 @@ var Connector = Class.create(Sprite, {
     this.sprite = sprite;
     this.surface = surface;
     scene.addChild(sprite);
+  },
+  remove: function(){
+    game.rootScene.removeChild(this);
+    delete this;
   }
 });
