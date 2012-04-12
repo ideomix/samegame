@@ -56,7 +56,6 @@ window.onload = function()
     scene.addEventListener('touchstart', function(e){
        // コネクタ用レイヤーを用意しておく
       connectorLayer = new Connector(scene);
-
       connector_path = new Array();
       connector_path.push(posToBlock(e.x, e.y));
     });
@@ -285,21 +284,25 @@ var Block = Class.create(Group, {
 // ----------------------------------------------------------
 var Connector = Class.create(Sprite, {
   initialize: function(scene) {
-    var sprite  = new Sprite(SCREEN_SIZE_HEIGHT, SCREEN_SIZE_WIDTH);
+    var film_sprite  = new Sprite(SCREEN_SIZE_HEIGHT, SCREEN_SIZE_WIDTH);
     var line_sprite  = new Sprite(SCREEN_SIZE_HEIGHT, SCREEN_SIZE_WIDTH);
     var surface = new Surface(SCREEN_SIZE_HEIGHT, SCREEN_SIZE_WIDTH);
     var context = surface.context;
     context.fillStyle = CONNECTOR_LAYER_BGCOLOR;
     context.fillRect(0, 0, SCREEN_SIZE_HEIGHT, SCREEN_SIZE_WIDTH);
     context.stroke();
-    sprite.opacity = CONNECTOR_LAYER_OPACITY;
-    sprite.image = surface;
-    sprite._element.style.zIndex = 1;
-    this.sprite = sprite;
+    film_sprite.opacity = CONNECTOR_LAYER_OPACITY;
+    film_sprite.image = surface;
+    film_sprite._element.style.zIndex = 1;
+    this.film_sprite = film_sprite;
     this.surface = surface;
-    scene.addChild(sprite);
+    this.line_sprite = line_sprite;
+    scene.addChild(film_sprite);
+    scene.addChild(line_sprite);
   },
   remove: function(){
+    game.rootScene.removeChild(this.sprite);
+    delete this.sprite;
     game.rootScene.removeChild(this);
     delete this;
   }
